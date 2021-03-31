@@ -8,12 +8,12 @@
           <button class="px-2 py-2 rounded bg-blue-500 text-white" @click="toggleMouse">Toggle Mouse Position</button>
         </div> -->
         <form action="#" class="mt-4" @submit.prevent="addTodo">
-          <input v-model="state.todoFromInput" type="text" class="w-full border border-gray-500 rounded placeholder-gray-600 px-2 py-3" placeholder="What needs to be done?">
+          <input v-model="todoFromInput" type="text" class="w-full border border-gray-500 rounded placeholder-gray-600 px-2 py-3" placeholder="What needs to be done?">
         </form>
 
-        <div v-if="state.todos.length">
+        <div v-if="todos.length">
           <ul class="text-2xl mt-4 space-y-6">
-            <li v-for="todo in state.todos" :key="todo.id" class="flex items-center justify-between">
+            <li v-for="todo in todos" :key="todo.id" class="flex items-center justify-between">
               <div class="flex items-center">
                 <input type="checkbox" v-model="todo.isComplete">
                 <div
@@ -50,48 +50,46 @@ import { useToggle } from '../functions/useToggle'
 
 export default {
   props: ['title'],
-
-  // using reactive in composition api
+  
+  // using refs in composition api
 
   setup(props) {
-    const state = reactive({
-      todoFromInput: '',
-      todoId: 4,
-      todos: [
-        {
-          id: 1,
-          description: 'Finish Screencast',
-          isComplete: false,
-        },
-        {
-          id: 2,
-          description: 'Learn Vue 3',
-          isComplete: false,
-        },
-        {
-          id: 3,
-          description: 'Paint Wall',
-          isComplete: false,
-        },
-      ]
-    })
+    const todoFromInput = ref('')
+    const todoId = ref(4)
+    const todos = ref([
+      {
+        id: 1,
+        description: 'Finish Screencast',
+        isComplete: false,
+      },
+      {
+        id: 2,
+        description: 'Learn Vue 3',
+        isComplete: false,
+      },
+      {
+        id: 3,
+        description: 'Paint Wall',
+        isComplete: false,
+      },
+    ])
 
     function addTodo() {
-      state.todos.push({
-        id: state.todoId,
-        description: state.todoFromInput,
+      todos.value.push({
+        id: todoId.value,
+        description: todoFromInput.value,
         isComplete: false,
       })
 
-      state.todoId++
-      state.todoFromInput = ''
+      todoId.value++
+      todoFromInput.value = ''
     }
 
     function deleteTodo(id) {
-      state.todos = state.todos.filter(todo => todo.id !== id)
+      todos.value = todos.value.filter(todo => todo.id !== id)
     }
 
-    const itemsLeft = computed(() => state.todos.filter(todo => !todo.isComplete).length)
+    const itemsLeft = computed(() => todos.value.filter(todo => !todo.isComplete).length)
 
     onMounted(() => {
       console.log('Todo mounted')
@@ -99,20 +97,93 @@ export default {
     })
 
     watch(
-      () => state.todoId, 
+      () => todoId.value,
       (newValue, oldValue) => {
         console.log('New Value: ' + newValue)
         console.log('Old Value: ' + oldValue)
       }
     )
 
+
     return {
-      state,
+      todoFromInput,
+      todoId,
+      todos,
       addTodo,
       deleteTodo,
-      itemsLeft
-    }
-  },
+      itemsLeft,
+    } 
+
+  
+  }
+
+
+
+
+  // using reactive in composition api
+
+  // setup(props) {
+  //   const state = reactive({
+  //     todoFromInput: '',
+  //     todoId: 4,
+  //     todos: [
+  //       {
+  //         id: 1,
+  //         description: 'Finish Screencast',
+  //         isComplete: false,
+  //       },
+  //       {
+  //         id: 2,
+  //         description: 'Learn Vue 3',
+  //         isComplete: false,
+  //       },
+  //       {
+  //         id: 3,
+  //         description: 'Paint Wall',
+  //         isComplete: false,
+  //       },
+  //     ]
+  //   })
+
+  //   function addTodo() {
+  //     state.todos.push({
+  //       id: state.todoId,
+  //       description: state.todoFromInput,
+  //       isComplete: false,
+  //     })
+
+  //     state.todoId++
+  //     state.todoFromInput = ''
+  //   }
+
+  //   function deleteTodo(id) {
+  //     state.todos = state.todos.filter(todo => todo.id !== id)
+  //   }
+
+  //   const itemsLeft = computed(() => state.todos.filter(todo => !todo.isComplete).length)
+
+  //   onMounted(() => {
+  //     console.log('Todo mounted')
+  //     console.log(props.title)
+  //   })
+
+  //   watch(
+  //     () => state.todoId, 
+  //     (newValue, oldValue) => {
+  //       console.log('New Value: ' + newValue)
+  //       console.log('Old Value: ' + oldValue)
+  //     }
+  //   )
+
+  //   return {
+  //     state,
+  //     addTodo,
+  //     deleteTodo,
+  //     itemsLeft
+  //   }
+  // },
+
+
 
 
   // old option api
